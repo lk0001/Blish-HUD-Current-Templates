@@ -1,18 +1,36 @@
 {
   "name": "Blish HUD Current Templates",
   "version": "0.1.0",
-  "namespace": "Blish_HUD_Current_Templates",
+  "namespace": "lk0001.CurrentTemplates",
   "package": "Blish HUD Current Templates.dll",
   "manifest_version": 1,
 
-  "description": "Description of your module. Visit https://github.com/blish-hud/manifest.json/blob/master/manifest-v1.md for details about the manifest format.",
+  "description": "Displays active build and equipment template names.\nWARNING: The data is read from GW2 API, so it's not always up-to-date. When you change the active template, it may take up to 5 minutes before the change is visible in the API (and in this module).",
   "dependencies": {
-    "bh.blishhud": ">=0.5.2"
+    "bh.blishhud": ">=0.11.5"
   },
   "url": "https://github.com/lk0001/Blish_HUD_Current_Templates",
   "contributors": [
     {
       "name": "lk0001"
     }
-  ]
+  ],
+  "api_permissions": {
+    "account": {
+      "optional": false,
+      "details": "Required to fetch characters."
+    },
+    "characters": {
+      "optional": false,
+      "details": "Required to fetch characters."
+    },
+    "inventories": {
+      "optional": false,
+      "details": "Required to check equipment templates."
+    },
+    "builds": {
+      "optional": false,
+      "details": "Required to check build templates."
+    }
+  }
 }
