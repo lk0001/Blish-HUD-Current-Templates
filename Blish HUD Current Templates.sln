@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Blish HUD Current Templates", "Blish HUD Current Templates.csproj", "{0CB885CF-3B81-4216-9DF2-87B13B68ABB2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0CB885CF-3B81-4216-9DF2-87B13B68ABB2}.Debug|x64.ActiveCfg = Debug|x64
+		{0CB885CF-3B81-4216-9DF2-87B13B68ABB2}.Debug|x64.Build.0 = Debug|x64
+		{0CB885CF-3B81-4216-9DF2-87B13B68ABB2}.Release|x64.ActiveCfg = Release|x64
+		{0CB885CF-3B81-4216-9DF2-87B13B68ABB2}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B8106268-817B-4F14-90B4-BE7CAA7BF1DC}
+	EndGlobalSection
+EndGlobal
