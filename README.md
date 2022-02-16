@@ -11,7 +11,7 @@ Current Templates module is a [Blish HUD](https://blishhud.com/) module which di
 
 ## Download Current Templates Module
 
-You can downlaod the Pathing module from:
+You can download the Pathing module from:
 - Our [Releases](https://github.com/lk0001/Blish-HUD-Current-Templates/releases) page here on GitHub.
 - The Blish HUD repository while in-game.
 
