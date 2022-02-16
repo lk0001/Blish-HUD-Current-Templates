@@ -9,7 +9,6 @@ Current Templates module is a [Blish HUD](https://blishhud.com/) module which di
 - Periodic API checking is based on [Blish HUD Pathing Module](https://github.com/blish-hud/Pathing)
 - Various questions were answered by members of [Blish HUD #📦module_dev_discussion Discord channel](https://discord.gg/HzAV82d)
 
-<!--
 ## Download Current Templates Module
 
 You can downlaod the Pathing module from:
@@ -18,6 +17,7 @@ You can downlaod the Pathing module from:
 
 In any case, you can review the Blish HUD [module install guide](https://blishhud.com/docs/user/installing-modules) for more details.
 
+<!--
 ## For Contributors
 
 Pull requests are welcome.  You are encouraged to join the discussion in the [Blish HUD #📦module_dev_discussion Discord channel](https://discord.gg/HzAV82d) or discuss with us through a [submitted issue](https://github.com/lk0001/Blish-HUD-Current-Templates/issues/new).
