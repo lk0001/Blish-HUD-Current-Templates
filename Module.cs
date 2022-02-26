@@ -63,7 +63,7 @@ namespace lk0001.CurrentTemplates
             _settingLoc = settings.DefineSetting("CurrentTemplatesLoc", new Point(1, 30), "Location", "");
             _settingDrag = settings.DefineSetting("CurrentTemplatesDrag", false, "Enable Dragging", "");
             _settingBuildPad = settings.DefineSetting("CurrentTemplatesBP", false, "BuildPad integration", "Displays build template name based on your builds saved in BuildPad (requires setting the path below)");
-            _settingBuildPadPath = settings.DefineSetting("CurrentTemplatesBPPath", "", "Path to BuildPad config", @"For example c:\Program Files\Guild Wars 2\addons\arcdps\arcdps.buildpad\config.ini");
+            _settingBuildPadPath = settings.DefineSetting("CurrentTemplatesBPPath", "", "Path to BuildPad config", "For example " + @"C:\Program Files\Guild Wars 2\addons\arcdps\arcdps.buildpad\config.ini".Replace(" ", "\u00A0"));
 
             _settingFontSize.SettingChanged += UpdateCurrentTemplatesSettings_Font;
             _settingAlign.SettingChanged += UpdateCurrentTemplatesSettings_Font;
