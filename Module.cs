@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Threading.Tasks;
 using Blish_HUD;
-using Blish_HUD.Graphics;
 using Blish_HUD.Graphics.UI;
 using Blish_HUD.Modules;
 using Blish_HUD.Modules.Managers;
@@ -39,6 +38,7 @@ namespace lk0001.CurrentTemplates
         public static SettingEntry<bool> _settingDrag;
         public static SettingEntry<Point> _settingLoc;
         private Controls.DrawTemplates templatesControl;
+        private Character character;
         private string characterName = "";
 
         protected override void DefineSettings(SettingCollection settings)
@@ -98,9 +98,9 @@ namespace lk0001.CurrentTemplates
             }
 
             // Reset check interval when player changes character
-            if (characterName != Gw2MumbleService.Gw2Mumble.PlayerCharacter.Name)
+            if (characterName != GameService.Gw2Mumble.PlayerCharacter.Name)
             {
-                characterName = Gw2MumbleService.Gw2Mumble.PlayerCharacter.Name;
+                characterName = GameService.Gw2Mumble.PlayerCharacter.Name;
                 Logger.Debug("Changing character to '{0}'", characterName);
                 ResetTemplates();
                 _lastTemplateCheck = INTERVAL_CHECKTEMPLATES;
@@ -134,7 +134,7 @@ namespace lk0001.CurrentTemplates
                     Logger.Debug("Getting character '{0}' from the API.", characterName);
 
                     templatesControl.ShowSpinner();
-                    Character character = await Gw2ApiManager.Gw2ApiClient.V2.Characters.GetAsync(characterName);
+                    character = await Gw2ApiManager.Gw2ApiClient.V2.Characters.GetAsync(characterName);
                     templatesControl.HideSpinner();
 
                     templatesControl.buildName = TemplateName(character.ActiveBuildTab, character.BuildTabs);
