@@ -40,6 +40,7 @@ namespace lk0001.CurrentTemplates
         private Controls.DrawTemplates templatesControl;
         private Character character;
         private string characterName = "";
+        private Views.SettingsView settingsView;
 
         protected override void DefineSettings(SettingCollection settings)
         {
@@ -53,14 +54,15 @@ namespace lk0001.CurrentTemplates
             _settingLoc.SettingChanged += UpdateCurrentTemplatesSettings_Location;
             _settingDrag.SettingChanged += UpdateCurrentTemplatesSettings_Show;
         }
+
         public override IView GetSettingsView()
         {
-            return new lk0001.CurrentTemplates.Views.SettingsView();
+            return settingsView;
         }
 
         protected override void Initialize()
         {
-
+            settingsView = new Views.SettingsView();
         }
 
         private void Gw2ApiManager_SubtokenUpdated(object sender, ValueEventArgs<IEnumerable<TokenPermission>> e)
