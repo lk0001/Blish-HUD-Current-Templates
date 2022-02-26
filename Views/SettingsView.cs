@@ -7,6 +7,8 @@ namespace lk0001.CurrentTemplates.Views
 {
     public class SettingsView : View
     {
+        private Label settingBuildPadPath_Warning;
+
         protected override void Build(Container buildPanel)
         {
             Panel parentPanel = new Panel()
@@ -74,6 +76,49 @@ namespace lk0001.CurrentTemplates.Views
                 Parent = parentPanel
             };
             settingDrag_Container.Show(settingDrag_View);
+
+            IView settingBuildPad_View = SettingView.FromType(Module._settingBuildPad, buildPanel.Width);
+            ViewContainer settingBuildPad_Container = new ViewContainer()
+            {
+                WidthSizingMode = SizingMode.Fill,
+                Location = new Point(10, settingDrag_Container.Bottom + 6),
+                Parent = parentPanel
+            };
+            settingBuildPad_Container.Show(settingBuildPad_View);
+
+            IView settingBuildPadPath_View = SettingView.FromType(Module._settingBuildPadPath, buildPanel.Width);
+            ViewContainer settingBuildPadPath_Container = new ViewContainer()
+            {
+                WidthSizingMode = SizingMode.Fill,
+                Location = new Point(10, settingBuildPad_Container.Bottom + 6),
+                Parent = parentPanel
+            };
+            settingBuildPadPath_Container.Show(settingBuildPadPath_View);
+
+            settingBuildPadPath_Warning = new Label()
+            {
+                Location = new Point(10, settingBuildPadPath_Container.Bottom + 10),
+                Width = 100,
+                AutoSizeHeight = false,
+                WrapText = false,
+                Parent = parentPanel,
+                Text = "Incorrect path",
+                TextColor = Color.Red,
+            };
+
+            ToggleIncorrectPathWarning();
+        }
+
+        public void ToggleIncorrectPathWarning()
+        {
+            if (Module._hasBuildPad)
+            {
+                settingBuildPadPath_Warning?.Hide();
+            }
+            else
+            {
+                settingBuildPadPath_Warning?.Show();
+            }
         }
     }
 }

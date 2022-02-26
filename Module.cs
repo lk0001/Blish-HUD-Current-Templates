@@ -16,10 +16,7 @@ namespace lk0001.CurrentTemplates
     [Export(typeof(Blish_HUD.Modules.Module))]
     public class Module : Blish_HUD.Modules.Module
     {
-        private static readonly Logger Logger = Logger.GetLogger<Module>();
-
-        private const double INTERVAL_CHECKTEMPLATES = 30010; // 30 seconds + 10ms
-        private double _lastTemplateCheck = -1;
+        public static readonly Logger Logger = Logger.GetLogger<Module>();
 
         #region Service Managers
         internal SettingsManager SettingsManager => this.ModuleParameters.SettingsManager;
@@ -35,11 +32,28 @@ namespace lk0001.CurrentTemplates
         public static string[] _fontAlign = new string[] { "Left", "Center", "Right" };
         public static SettingEntry<string> _settingFontSize;
         public static SettingEntry<string> _settingAlign;
-        public static SettingEntry<bool> _settingDrag;
         public static SettingEntry<Point> _settingLoc;
+        public static SettingEntry<bool> _settingDrag;
+        public static SettingEntry<bool> _settingBuildPad;
+        public static SettingEntry<string> _settingBuildPadPath;
+        public static bool _hasBuildPad = false;
+
+        private static readonly double INTERVAL_CHECKTEMPLATES = 30010; // 30 seconds + 10ms
+        private static readonly List<string> GW2_PATHS = new List<string>()
+        {
+            "c:/Program Files/Guild Wars 2",
+            "c:/Program Files (x86)/Guild Wars 2",
+            "d:/Guild Wars 2",
+            ".",
+            "..",
+        };
+        private static readonly string BUILD_PAD_PATH = "addons/arcdps/arcdps.buildpad/config.ini";
+
+        private double _lastTemplateCheck = -1;
         private Controls.DrawTemplates templatesControl;
         private Character character;
         private string characterName = "";
+        private Utility.BuildPad buildPad;
         private Views.SettingsView settingsView;
 
         protected override void DefineSettings(SettingCollection settings)
@@ -48,11 +62,15 @@ namespace lk0001.CurrentTemplates
             _settingAlign = settings.DefineSetting("CurrentTemplatesAlign", "Left", "Align", "");
             _settingLoc = settings.DefineSetting("CurrentTemplatesLoc", new Point(1, 30), "Location", "");
             _settingDrag = settings.DefineSetting("CurrentTemplatesDrag", false, "Enable Dragging", "");
+            _settingBuildPad = settings.DefineSetting("CurrentTemplatesBP", false, "BuildPad integration", "Displays build template name based on your builds saved in BuildPad (requires setting the path below)");
+            _settingBuildPadPath = settings.DefineSetting("CurrentTemplatesBPPath", "", "Path to BuildPad config", @"For example c:\Program Files\Guild Wars 2\addons\arcdps\arcdps.buildpad\config.ini");
 
             _settingFontSize.SettingChanged += UpdateCurrentTemplatesSettings_Font;
             _settingAlign.SettingChanged += UpdateCurrentTemplatesSettings_Font;
             _settingLoc.SettingChanged += UpdateCurrentTemplatesSettings_Location;
             _settingDrag.SettingChanged += UpdateCurrentTemplatesSettings_Show;
+            _settingBuildPad.SettingChanged += UpdateCurrentTemplatesSettings_BuildPadShow;
+            _settingBuildPadPath.SettingChanged += UpdateCurrentTemplatesSettings_BuildPadConfigPath;
         }
 
         public override IView GetSettingsView()
@@ -79,6 +97,9 @@ namespace lk0001.CurrentTemplates
             UpdateCurrentTemplatesSettings_Font();
             UpdateCurrentTemplatesSettings_Location();
             UpdateCurrentTemplatesSettings_Show();
+            UpdateCurrentTemplatesSettings_BuildPadShow();
+            UpdateCurrentTemplatesSettings_BuildPadConfigPath();
+            DetectBuildPadPath();
         }
 
         protected override void OnModuleLoaded(EventArgs e)
@@ -118,7 +139,38 @@ namespace lk0001.CurrentTemplates
             _settingAlign.SettingChanged -= UpdateCurrentTemplatesSettings_Font;
             _settingLoc.SettingChanged -= UpdateCurrentTemplatesSettings_Location;
             _settingDrag.SettingChanged -= UpdateCurrentTemplatesSettings_Show;
+            _settingBuildPad.SettingChanged -= UpdateCurrentTemplatesSettings_BuildPadShow;
+            _settingBuildPadPath.SettingChanged -= UpdateCurrentTemplatesSettings_BuildPadConfigPath;
             templatesControl?.Dispose();
+        }
+
+        private void InitBuildPad()
+        {
+            if (Utility.BuildPad.ValidPath(_settingBuildPadPath.Value))
+            {
+                buildPad = new Utility.BuildPad(_settingBuildPadPath.Value);
+                _hasBuildPad = true;
+            } else
+            {
+                buildPad = null;
+                _hasBuildPad = false;
+            }
+            settingsView.ToggleIncorrectPathWarning();
+        }
+
+        private void DetectBuildPadPath()
+        {
+            if (_settingBuildPadPath.Value != "") return;
+
+            GW2_PATHS.ForEach((path) =>
+            {
+                string fullPath = System.IO.Path.Combine(new string[] { path, BUILD_PAD_PATH });
+                if (System.IO.File.Exists(fullPath))
+                {
+                    _settingBuildPadPath.Value = System.IO.Path.GetFullPath(fullPath);
+                    return;
+                }
+            });
         }
 
         private async Task CheckTemplates(GameTime gameTime)
@@ -139,8 +191,7 @@ namespace lk0001.CurrentTemplates
                     character = await Gw2ApiManager.Gw2ApiClient.V2.Characters.GetAsync(characterName);
                     templatesControl.HideSpinner();
 
-                    templatesControl.buildName = TemplateName(character.ActiveBuildTab, character.BuildTabs);
-                    templatesControl.equipmentName = TemplateName(character.ActiveEquipmentTab, character.EquipmentTabs);
+                    UpdateTemplates();
 
                     Logger.Debug("Loaded '{0}' and '{1}' from the API.", templatesControl.buildName, templatesControl.equipmentName);
                 }
@@ -161,17 +212,36 @@ namespace lk0001.CurrentTemplates
             templatesControl.equipmentName = "";
         }
 
+        private void UpdateTemplates()
+        {
+            if (character != null)
+            {
+                templatesControl.buildName = TemplateName(character.ActiveBuildTab, character.BuildTabs);
+                templatesControl.equipmentName = TemplateName(character.ActiveEquipmentTab, character.EquipmentTabs);
+            }
+        }
+
         private string TemplateName<T>(int? activeTab, IReadOnlyList<T> tabs)
         {
-            if (activeTab == null)
-            {
-                return "Missing!";
-            }
+            if (activeTab == null) return "Missing!";
             T tab = tabs[(int)activeTab - 1];
             string tabName = "";
+            string suffix = ""; // TODO extract suffix to instance variable and add color (optional?)
             if (typeof(T) == typeof(CharacterBuildTabSlot))
             {
-                tabName = ((CharacterBuildTabSlot)(object)tab).Build.Name;
+                string? buildPadName = _settingBuildPad.Value && buildPad != null ?
+                    buildPad.GetName(((CharacterBuildTabSlot)(object)tab).Build) :
+                    null;
+
+                if (buildPadName != null)
+                {
+                    tabName = buildPadName;
+                    suffix = " [BP]";
+                } else
+                {
+                    tabName = ((CharacterBuildTabSlot)(object)tab).Build.Name;
+                    suffix = _settingBuildPad.Value ? " [Not in BP]" : "";
+                }
             } else if (typeof(T) == typeof(CharacterEquipmentTabSlot))
             {
                 tabName = ((CharacterEquipmentTabSlot)(object)tab).Name;
@@ -180,8 +250,9 @@ namespace lk0001.CurrentTemplates
             {
                 tabName = "Tab " + activeTab.ToString();
             }
-            return tabName;
+            return tabName + suffix;
         }
+
         private void UpdateCurrentTemplatesSettings_Show(object sender = null, ValueChangedEventArgs<bool> e = null)
         {
             templatesControl.Drag = _settingDrag.Value;
@@ -194,6 +265,27 @@ namespace lk0001.CurrentTemplates
         private void UpdateCurrentTemplatesSettings_Location(object sender = null, ValueChangedEventArgs<Point> e = null)
         {
             templatesControl.Location = _settingLoc.Value;
+        }
+
+        private void UpdateCurrentTemplatesSettings_BuildPadShow(object sender = null, ValueChangedEventArgs<bool> e = null)
+        {
+            if (!templatesControl.BuildPad && _settingBuildPad.Value)
+            {
+                DetectBuildPadPath();
+                InitBuildPad();
+            }
+            templatesControl.BuildPad = _settingBuildPad.Value;
+            UpdateTemplates();
+        }
+
+        private void UpdateCurrentTemplatesSettings_BuildPadConfigPath(object sender = null, ValueChangedEventArgs<string> e = null)
+        {
+            if (templatesControl.BuildPadConfigPath != _settingBuildPadPath.Value)
+            {
+                templatesControl.BuildPadConfigPath = _settingBuildPadPath.Value;
+                InitBuildPad();
+                UpdateTemplates();
+            }
         }
     }
 

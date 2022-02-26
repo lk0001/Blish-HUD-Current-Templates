@@ -15,9 +15,11 @@ namespace lk0001.CurrentTemplates.Controls
 {
     class DrawTemplates: Container
     {
-        public bool Drag = false;
         public ContentService.FontSize Font_Size = ContentService.FontSize.Size16;
         public HorizontalAlignment Align = HorizontalAlignment.Left;
+        public bool Drag = false;
+        public bool BuildPad = false;
+        public string BuildPadConfigPath = "";
 
         public string buildName = "";
         public string equipmentName = "";

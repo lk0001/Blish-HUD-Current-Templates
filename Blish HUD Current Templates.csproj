@@ -66,6 +66,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\DrawTemplates.cs" />
+    <Compile Include="Utility\Build.cs" />
+    <Compile Include="Utility\BuildPad.cs" />
+    <Compile Include="Utility\Constants.cs" />
+    <Compile Include="Utility\BuildSpecialization.cs" />
+    <Compile Include="Utility\TraitColumn.cs" />
+    <Compile Include="Utility\TraitLine.cs" />
     <Compile Include="Utility\UpdateCadenceUtil.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Views\SettingsView.cs" />

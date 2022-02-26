@@ -7,6 +7,8 @@ Current Templates module is a [Blish HUD](https://blishhud.com/) module which di
 - Project was set up using [Blish HUD Module Template](https://github.com/blish-hud/Module-Template)
 - UI and settings are heavily based on [Blish HUD Clock Module](https://github.com/manlaan/BlishHud-Clock)
 - Periodic API checking is based on [Blish HUD Pathing Module](https://github.com/blish-hud/Pathing)
+- Build template chat code parsing is based on [thatshaman/Buildtemplate](https://github.com/thatshaman/Buildtemplate)
+- BuildPad-related enums/consts are based on [BuildPad](https://github.com/xvwyh/BuildPad/blob/master/arcdps_buildpad/buildpad/GW2.h)
 - Various questions were answered by members of [Blish HUD #📦module_dev_discussion Discord channel](https://discord.gg/HzAV82d)
 
 ## Download Current Templates Module
